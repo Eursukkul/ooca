@@ -1,6 +1,6 @@
 "use client";
 
-import { MENU_PRICES } from "@/lib/menu";
+import { MENU_PRICES, SINGLE_ORDER_ITEMS } from "@/lib/menu";
 import {
   MENU_ITEMS,
   type CalculationResult,
@@ -25,10 +25,11 @@ export default function BillCalculator() {
   }, [items]);
 
   const updateItem = (itemName: MenuItemName, quantity: number) => {
-    setItems((current) => ({
-      ...current,
-      [itemName]: Number.isFinite(quantity) && quantity > 0 ? Math.floor(quantity) : 0
-    }));
+    let value = Number.isFinite(quantity) && quantity > 0 ? Math.floor(quantity) : 0;
+    if (SINGLE_ORDER_ITEMS.includes(itemName)) {
+      value = Math.min(value, 1);
+    }
+    setItems((current) => ({ ...current, [itemName]: value }));
   };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -68,6 +69,7 @@ export default function BillCalculator() {
               <input
                 type="number"
                 min={0}
+                max={SINGLE_ORDER_ITEMS.includes(itemName) ? 1 : undefined}
                 value={items[itemName] ?? 0}
                 onChange={(event) =>
                   updateItem(itemName, Number(event.target.value))

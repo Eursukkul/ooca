@@ -55,6 +55,15 @@ describe("calculateBill", () => {
     });
   });
 
+  it("limits single-order items (e.g. Red) to max 1", () => {
+    const result = calculateBill({
+      items: { Red: 5 },
+      hasMemberCard: false
+    });
+    expect(result.subtotal).toBe(50);
+    expect(result.total).toBe(50);
+  });
+
   it("normalizes invalid and fractional quantities", () => {
     const result = calculateBill({
       items: {

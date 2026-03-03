@@ -16,5 +16,8 @@ export const SPECIAL_DISCOUNT_ITEMS: ReadonlyArray<MenuItemName> = [
   "Green"
 ];
 
+
+export const SINGLE_ORDER_ITEMS: ReadonlyArray<MenuItemName> = ["Red"];
+
 export const SPECIAL_DISCOUNT_RATE = 0.05;
 export const MEMBER_DISCOUNT_RATE = 0.1;

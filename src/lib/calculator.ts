@@ -1,6 +1,7 @@
 import {
   MEMBER_DISCOUNT_RATE,
   MENU_PRICES,
+  SINGLE_ORDER_ITEMS,
   SPECIAL_DISCOUNT_ITEMS,
   SPECIAL_DISCOUNT_RATE
 } from "@/lib/menu";
@@ -28,23 +29,30 @@ export const roundThaiBahtCash = (value: number): number => {
   return baht + 1;
 };
 
-const getSafeQuantity = (value: number | undefined): number => {
+const getSafeQuantity = (
+  value: number | undefined,
+  itemName?: MenuItemName
+): number => {
   if (value === undefined || !Number.isFinite(value) || value <= 0) {
     return 0;
   }
-  return Math.floor(value);
+  const qty = Math.floor(value);
+  if (itemName && SINGLE_ORDER_ITEMS.includes(itemName)) {
+    return Math.min(qty, 1);
+  }
+  return qty;
 };
 
 const calculateSubtotal = (items: CalculationRequest["items"]): number => {
   return MENU_ITEMS.reduce((total, itemName) => {
-    const quantity = getSafeQuantity(items[itemName]);
+    const quantity = getSafeQuantity(items[itemName], itemName);
     return total + MENU_PRICES[itemName] * quantity;
   }, 0);
 };
 
 const calculateSpecialDiscount = (items: CalculationRequest["items"]): number => {
   return SPECIAL_DISCOUNT_ITEMS.reduce((discount, itemName: MenuItemName) => {
-    const quantity = getSafeQuantity(items[itemName]);
+    const quantity = getSafeQuantity(items[itemName], itemName);
     const pairs = Math.floor(quantity / 2);
     const pairPrice = MENU_PRICES[itemName] * 2;
 
